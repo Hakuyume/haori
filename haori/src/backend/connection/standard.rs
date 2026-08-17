@@ -92,14 +92,14 @@ fn watch_resolve(
                                     abort_guards_next.insert(ip_addr, abort_guard);
                                     item.push((client, abort_registration));
                                 }
-                                Err(e) => tracing::error!(error = e.to_string()),
+                                Err(e) => tracing::error!(error = %e),
                             }
                         }
                     }
                     self.abort_guards = abort_guards_next;
                 }
                 Err(e) => {
-                    tracing::warn!(error = e.to_string());
+                    tracing::warn!(error = %e);
                     if e.is_nx_domain() || e.is_no_records_found() {
                         self.abort_guards.clear()
                     }

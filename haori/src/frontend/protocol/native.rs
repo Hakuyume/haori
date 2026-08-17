@@ -74,7 +74,7 @@ pub(super) async fn serve(
 
             loop {
                 if let Err(e) = serve().await {
-                    tracing::warn!(error = e.to_string());
+                    tracing::warn!(error = %e);
                     tokio::time::sleep(retry_delay).await
                 }
             }
@@ -159,9 +159,7 @@ async fn fallback(
     request: http::Request<axum::body::Body>,
 ) -> Result<http::Response<client::Body>, axum::response::Response> {
     let (request, model_id) = if let Some(value) = request.headers().get(header::MODEL_ID)
-        && let Ok(value) = value
-            .to_str()
-            .inspect_err(|e| tracing::warn!(warn = e.to_string()))
+        && let Ok(value) = value.to_str().inspect_err(|e| tracing::warn!(error = %e))
     {
         let value = value.to_owned();
         let request = request.map(http_body_util::BodyExt::boxed_unsync);
@@ -179,7 +177,7 @@ async fn fallback(
             )
             .await?;
         let Body { model } = serde_json::from_slice(&body).map_err(|e| {
-            tracing::warn!(warn = e.to_string());
+            tracing::warn!(error = %e);
             http::StatusCode::BAD_REQUEST.into_response()
         })?;
 
@@ -187,7 +185,7 @@ async fn fallback(
             Ok(value) => {
                 parts.headers.insert(header::MODEL_ID, value);
             }
-            Err(e) => tracing::warn!(warn = e.to_string()),
+            Err(e) => tracing::warn!(error = %e),
         }
         let request = http::Request::from_parts(
             parts,
@@ -229,7 +227,7 @@ async fn fallback(
                         .unwrap_or_default() as f64)
             }))
             .map_err(|e| {
-                tracing::warn!(error = e.to_string());
+                tracing::warn!(error = %e);
                 http::StatusCode::INTERNAL_SERVER_ERROR.into_response()
             })?;
 
@@ -239,7 +237,7 @@ async fn fallback(
             .client
             .send(request)
             .map_err(|e| {
-                tracing::warn!(error = e.to_string());
+                tracing::warn!(error = %e);
                 http::StatusCode::BAD_GATEWAY.into_response()
             })
             .await?;

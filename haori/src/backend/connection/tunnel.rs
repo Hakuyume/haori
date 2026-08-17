@@ -42,7 +42,7 @@ pub(super) async fn watch(
                     let _abort_guard = abort_guard;
                     connection.await
                 }
-                .inspect_err(|e| tracing::warn!(error = e.to_string()))
+                .inspect_err(|e| tracing::warn!(error = %e))
                 .instrument(tracing::Span::current()),
             );
             Ok((client, abort_registration))
@@ -61,7 +61,7 @@ pub(super) async fn watch(
                     break Some((item, state));
                 }
                 Err(e) => {
-                    tracing::warn!(error = e.to_string());
+                    tracing::warn!(error = %e);
                 }
             }
         }

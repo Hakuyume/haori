@@ -82,7 +82,7 @@ pub(super) fn watch(
         }
         let item = match state
             .next()
-            .inspect_err(|e| tracing::warn!(error = e.to_string()))
+            .inspect_err(|e| tracing::warn!(error = %e))
             .await
         {
             Ok(providers) => Some(Ok(providers)),
