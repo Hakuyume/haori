@@ -75,7 +75,7 @@ pub(super) async fn serve(
             .map_ok(|_: (_, Infallible)| ())
             .await
         }
-        connection::Config::Tunnel { .. } => Err("`tunnel` and `envoy-xds` do not work together")?,
+        connection::Config::Tunnel { .. } => Err("`tunnel` and `envoy_xds` do not work together")?,
     }
 }
 

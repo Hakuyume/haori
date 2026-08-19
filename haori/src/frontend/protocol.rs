@@ -13,7 +13,7 @@ pub(super) struct Config(Inner);
 enum Inner {
     #[serde(rename = "native")]
     Native(native::Config),
-    #[serde(rename = "envoy-xds")]
+    #[serde(rename = "envoy_xds")]
     EnvoyXds(envoy_xds::Config),
 }
 
